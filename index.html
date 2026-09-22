@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sekolah Pintar: Memahami Sistem Operasi Komputer</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Google Nunito & Fredoka -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Tone.js for Sound Effects -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            fredoka: ['Fredoka', 'sans-serif'],
+            nunito: ['Nunito', 'sans-serif']
+          },
+          colors: {
+            brand: {
+              yellow: '#FBBF24',
+              blue: '#2563EB',
+              cyan: '#06B6D4',
+              dark: '#1E293B',
+              green: '#10B981',
+              orange: '#F97316'
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Nunito', sans-serif;
+      user-select: none;
+    }
+    h1, h2, h3, .heading-font {
+      font-family: 'Fredoka', cursive;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    @keyframes bobbing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .animate-bob {
+      animation: bobbing 2.5s ease-in-out infinite;
+    }
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(3deg); }
+    }
+    .animate-wiggle {
+      animation: wiggle 1.2s ease-in-out infinite;
+    }
+    .bubble-btn {
+      box-shadow: 0 6px 0 rgba(0,0,0,0.12);
+      transition: all 0.15s ease;
+    }
+    .bubble-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0,0,0,0.12);
+    }
+    .sticker-card {
+      transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .sticker-card:hover {
+      transform: translateY(-4px) scale(1.02);
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.1); opacity: 0.3; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+    .radar-pulse {
+      animation: pulse-ring 2s infinite ease-in-out;
+    }
+    /* Smart Sidebar transitions */
+    #smart-sidebar {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  </style>
+</head>
+<body class="bg-amber-50/60 text-slate-800 min-h-screen flex antialiased selection:bg-amber-300 selection:text-slate-900 overflow-x-hidden">
+
+  <!-- Backdrop Overlay untuk Mobile/Tablet -->
+  <div id="sidebar-backdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+  <!-- SIDEBAR CERDAS -->
+  <aside id="smart-sidebar" class="fixed top-0 bottom-0 left-0 z-50 w-72 bg-white border-r-2 border-amber-200/80 shadow-2xl flex flex-col justify-between -translate-x-full transition-transform duration-300 select-none">
+    
+    <!-- Bagian Atas: Profil Sekolah & Tombol Tutup -->
+    <div class="p-5 border-b border-slate-150 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 bg-amber-400 text-amber-950 rounded-2xl flex items-center justify-center text-2xl border-2 border-amber-300 shadow-sm animate-wiggle">
+            🏫
+          </div>
+          <div>
+            <h1 class="text-base font-black text-slate-800 leading-tight heading-font">
+              Sekolah Pintar OS
+            </h1>
+            <span class="text-[10px] font-black uppercase text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+              Informatika Kelas 6
+            </span>
+          </div>
+        </div>
+        <!-- Tombol Tutup Sidebar (Berfungsi di Desktop & Mobile) -->
+        <button onclick="toggleSidebar(false)" class="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-amber-100 transition flex items-center gap-1 text-xs font-black" title="Tutup Menu Belajar">
+          <i data-lucide="panel-left-close" class="w-5 h-5 hidden sm:block text-slate-600"></i>
+          <i data-lucide="x" class="w-5 h-5 sm:hidden text-slate-600"></i>
+        </button>
+      </div>
+
+      <!-- Widget Pintar: Status Progress Belajar Siswa -->
+      <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-3.5 rounded-2xl border-2 border-amber-200 space-y-2">
+        <div class="flex items-center justify-between text-xs font-black text-slate-700">
+          <span class="flex items-center gap-1.5 text-amber-900">
+            <span>🎯</span> Misi Belajar:
+          </span>
+          <span id="sidebar-progress-badge" class="text-blue-600 bg-white px-2 py-0.5 rounded-md border border-amber-200 shadow-2xs">
+            1/4 Bab
+          </span>
+        </div>
+        <div class="w-full bg-amber-200/70 h-2.5 rounded-full overflow-hidden">
+          <div id="sidebar-progress-fill" class="bg-gradient-to-r from-amber-500 to-blue-600 h-full w-1/4 transition-all duration-500"></div>
+        </div>
+        <p id="sidebar-progress-desc" class="text-[10px] text-slate-500 font-bold leading-tight">
+          Jelajahi semua bab untuk membuka lencana!
+        </p>
+      </div>
+    </div>
+
+    <!-- Navigasi Utama Sidebar -->
+    <nav class="p-4 space-y-1.5 flex-1 overflow-y-auto custom-scroll text-sm font-black">
+      <div class="text-[11px] font-black text-slate-400 uppercase tracking-wider px-3 pb-1">
+        Menu Pelajaran
+      </div>
+
+      <!-- Item 1: Cerita Sekolah -->
+      <button onclick="navigateTab('tab-peta')" id="sbtn-peta" class="sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-xs">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🗺️</span>
+          <div class="text-left">
+            <div class="heading-font text-xs font-black">1. Cerita Sekolah</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Analogi Guru & OS</div>
+          </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-blue-600"></i>
+      </button>
+
+      <!-- Item 2: Ruang Kelas -->
+      <button onclick="navigateTab('tab-simulasi')" id="sbtn-simulasi" class="sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition text-slate-600 hover:bg-slate-100/80 border-2 border-transparent">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🎮</span>
+          <div class="text-left">
+            <div class="heading-font text-xs font-black">2. Game Ruang Kelas</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Simulasi Memori (RAM)</div>
+          </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 opacity-0 transition group-hover:opacity-100"></i>
+      </button>
+
+      <!-- Item 3: Sahabat OS -->
+      <button onclick="navigateTab('tab-galeri')" id="sbtn-galeri" class="sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition text-slate-600 hover:bg-slate-100/80 border-2 border-transparent">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🦸‍♂️</span>
+          <div class="text-left">
+            <div class="heading-font text-xs font-black">3. Sahabat OS</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Windows, Android & Lainnya</div>
+          </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 opacity-0"></i>
+      </button>
+
+      <!-- Item 4: Kuis Lencana -->
+      <button onclick="navigateTab('tab-kuis')" id="sbtn-kuis" class="sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition text-slate-600 hover:bg-slate-100/80 border-2 border-transparent">
+        <div class="flex items-center gap-3">
+          <span class="text-xl">🏆</span>
+          <div class="text-left">
+            <div class="heading-font text-xs font-black">4. Kuis Lencana</div>
+            <div class="text-[10px] text-slate-500 font-semibold">Ujian Sertifikat Digital</div>
+          </div>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 opacity-0"></i>
+      </button>
+
+      <!-- Papan Catatan Interaktif "Pesan Pak Budi" -->
+      <div class="pt-3">
+        <div onclick="cycleTeacherTip()" class="cursor-pointer bg-amber-100/70 hover:bg-amber-100 transition p-3.5 rounded-2xl border-2 border-amber-300/80 space-y-1 group">
+          <div class="flex items-center justify-between text-[11px] font-black text-amber-950">
+            <span class="flex items-center gap-1.5">👨‍🏫 Tips Pak Budi:</span>
+            <span class="text-[9px] bg-amber-300 text-amber-950 px-1.5 py-0.5 rounded font-black">Klik Ubah 💡</span>
+          </div>
+          <p id="pak-budi-tip" class="text-[11px] text-amber-900 font-semibold leading-relaxed">
+            "Sistem Operasi ibarat Kepala Sekolah. Ia yang mengatur jam belajar agar komputer tidak macet!"
+          </p>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Bagian Bawah: Aksi Cepat & Profil Guru -->
+    <div class="p-4 border-t border-slate-150 space-y-2 bg-slate-50/70">
+      <div class="grid grid-cols-2 gap-2">
+        <!-- Bel Sekolah -->
+        <button onclick="playSchoolBell()" class="bubble-btn py-2 px-2.5 bg-amber-400 hover:bg-amber-300 text-amber-950 font-black text-xs rounded-xl flex items-center justify-center gap-1.5 border border-amber-500 shadow-xs" title="Bunyikan Bel">
+          <span>🔔</span> Bel Masuk
+        </button>
+        <!-- Tips Guru Modal -->
+        <button onclick="openModal('modal-guru')" class="bubble-btn py-2 px-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs rounded-xl flex items-center justify-center gap-1.5 border border-blue-700 shadow-xs">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Tips Guru
+        </button>
+      </div>
+
+      <div class="flex items-center justify-between pt-1 text-[11px] text-slate-500 font-bold px-1">
+        <span>Efek Suara Audio:</span>
+        <button onclick="toggleSound()" class="flex items-center gap-1 text-slate-700 hover:text-blue-600 font-black">
+          <i data-lucide="volume-2" id="sidebar-sound-icon" class="w-4 h-4 text-blue-600"></i>
+          <span id="sidebar-sound-text">Nyala</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- WRAPPER KONTEN UTAMA (Dengan Margin Kiri saat Desktop) -->
+  <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 transition-all duration-300">
+
+    <!-- Header Ramping & Bersih (Hanya Tombol Toggle & Status) -->
+    <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200/80 shadow-xs px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Tombol Buka/Tutup Sidebar (Selalu Tersedia di Desktop & Mobile) -->
+        <button onclick="toggleSidebar()" class="p-2 px-3 rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-900 border border-slate-200 transition flex items-center gap-1.5 font-black text-xs shadow-2xs cursor-pointer" aria-label="Buka/Tutup Menu">
+          <i data-lucide="menu" class="w-5 h-5 text-amber-600"></i>
+          <span class="text-xs font-black heading-font">Menu Belajar</span>
+        </button>
+
+        <!-- Breadcrumb / Penanda Bab Aktif -->
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-black text-blue-700 bg-blue-50 px-2.5 py-1 rounded-xl border border-blue-200 flex items-center gap-1">
+            <span id="top-badge-emoji">🗺️</span>
+            <span id="top-badge-title">Bab 1: Cerita Sekolah</span>
+          </span>
+          <span class="hidden sm:inline-block text-xs text-slate-400 font-semibold">• Media Ajar OS Kelas 6</span>
+        </div>
+      </div>
+
+      <!-- Quick Action di Kanan Atas -->
+      <div class="flex items-center gap-2">
+        <button onclick="playSchoolBell()" class="w-9 h-9 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 transition flex items-center justify-center text-base" title="Bunyikan Bel Sekolah!">
+          🔔
+        </button>
+        <button onclick="toggleSound()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 transition flex items-center justify-center border border-slate-200" title="Suara Efek (On/Off)">
+          <i data-lucide="volume-2" id="sound-icon" class="w-4 h-4 text-slate-700"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Wrapper -->
+    <main class="max-w-5xl mx-auto px-4 py-6 space-y-6 flex-1 w-full">
+      <!-- HERO BANNER PEMANTIK DISKUSI -->
+      <section class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 p-6 md:p-8 text-slate-900 shadow-lg border-4 border-amber-300">
+        <!-- Hiasan Ornamen Latar -->
+        <div class="absolute -right-6 -bottom-8 text-8xl md:text-9xl opacity-20 pointer-events-none select-none animate-bob">
+          🏫
+        </div>
+        <div class="absolute top-2 right-16 text-3xl opacity-30 pointer-events-none select-none">
+          🔔
+        </div>
+
+        <div class="relative z-10 max-w-3xl space-y-4">
+          <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-xs text-amber-950 px-3.5 py-1 rounded-full text-xs font-black shadow-2xs border border-amber-300/80">
+            <span class="animate-wiggle inline-block">🤔</span>
+            <span>Tantangan Imajinasi Kelas 6</span>
+          </div>
+
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 heading-font leading-tight">
+            Bayangkan jika sekolah kita <span class="underline decoration-wavy decoration-white">tidak ada</span> Kepala Sekolah dan Guru yang mengatur?
+          </h2>
+
+          <p class="text-xs sm:text-sm md:text-base font-bold text-amber-950/90 leading-relaxed">
+            Pasti murid-murid berebut ruang kelas, tidak ada bel masuk, dan jam istirahat jadi kacau balau! Nah, <span class="bg-white/90 px-2 py-0.5 rounded-lg text-blue-900 font-black shadow-2xs">komputer juga sama persis!</span> Tanpa <strong>Sistem Operasi</strong>, semua aplikasi akan bertabrakan dan komputer tidak bisa dipakai sama sekali.
+          </p>
+
+          <!-- Perbandingan Cepat Interaktif -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+            <div class="bg-white/70 backdrop-blur-xs p-3.5 rounded-2xl border-2 border-amber-200/90 flex items-start gap-3 shadow-2xs">
+              <span class="text-2xl shrink-0">😵‍💫</span>
+              <div>
+                <div class="font-black text-xs text-rose-900 uppercase">Tanpa Pengatur (Kacau)</div>
+                <div class="text-[11px] text-slate-700 font-bold leading-snug">Murid berebut meja belajar = Aplikasi bertabrakan & komputer macet/hang.</div>
+              </div>
+            </div>
+
+            <div class="bg-white/70 backdrop-blur-xs p-3.5 rounded-2xl border-2 border-amber-200/90 flex items-start gap-3 shadow-2xs">
+              <span class="text-2xl shrink-0">✨</span>
+              <div>
+                <div class="font-black text-xs text-emerald-900 uppercase">Ada Sistem Operasi (Tertib)</div>
+                <div class="text-[11px] text-slate-700 font-bold leading-snug">Jadwal rapi, ruang kelas terbagi = Main game sambil dengar musik tetap lancar!</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tombol Aksi Cepat -->
+          <div class="pt-2 flex flex-wrap items-center gap-3">
+            <button onclick="playSchoolBell(); showToast('Tepat sekali! Karena itulah komputer butuh Sistem Operasi! 👏')" class="bubble-btn bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-5 py-3 rounded-2xl flex items-center gap-2 shadow-md">
+              <span>💡</span> "Wah, benar juga! Pasti berantakan!"
+            </button>
+            <button onclick="navigateTab('tab-simulasi')" class="bubble-btn bg-white hover:bg-amber-100 text-amber-950 font-black text-xs sm:text-sm px-4 py-3 rounded-2xl border-2 border-amber-200 flex items-center gap-1.5 shadow-xs">
+              <span>🎮</span> Coba Jadi Pengaturnya Sekarang ➔
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 1: CERITA SEKOLAH & ANALOGI -->
+      <section id="tab-peta" class="tab-content block space-y-6">
+        <div class="bg-white rounded-3xl p-6 border-4 border-amber-200/80 shadow-md space-y-5">
+          <div class="flex flex-col md:flex-row justify-between md:items-center gap-3 border-b-2 border-amber-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="text-2xl">🏫</span>
+                <h3 class="text-2xl font-black text-slate-800 heading-font">1. Cerita Sekolah & Sistem Operasi</h3>
+              </div>
+              <p class="text-slate-500 text-sm font-semibold">Klik salah satu kartu di bawah ini untuk melihat perbandingannya dengan komputer!</p>
+            </div>
+          </div>
+
+          <!-- 3 Kartu Interaktif Analogi Sekolah -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Hardware -->
+            <div id="card-hardware" onclick="selectAnalogy('hardware')" class="cursor-pointer p-5 rounded-3xl border-3 border-slate-200 hover:border-amber-400 bg-white shadow-xs transition sticker-card space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl">
+                🏢
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase text-amber-800 bg-amber-100 px-2 py-0.5 rounded-full">Fisik Nyata</span>
+                <h4 class="font-black text-base text-slate-800 heading-font mt-1">Gedung & Meja Belajar</h4>
+              </div>
+              <p class="text-xs text-slate-500 font-semibold leading-relaxed">
+                Di komputer, ini adalah <strong>Perangkat Keras (Hardware)</strong> seperti Monitor, Keyboard, dan CPU.
+              </p>
+              <div class="text-[11px] font-black text-amber-600 flex items-center gap-1">
+                <span>Klik untuk pelajari</span> ➔
+              </div>
+            </div>
+
+            <!-- OS -->
+            <div id="card-os" onclick="selectAnalogy('os')" class="cursor-pointer p-5 rounded-3xl border-3 border-blue-500 bg-blue-50/50 shadow-md transition sticker-card space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center text-2xl">
+                👨‍🏫
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase text-blue-800 bg-blue-100 px-2 py-0.5 rounded-full">Pemimpin / Pengatur</span>
+                <h4 class="font-black text-base text-slate-800 heading-font mt-1">Kepala Sekolah</h4>
+              </div>
+              <p class="text-xs text-slate-500 font-semibold leading-relaxed">
+                Di komputer, inilah <strong>Sistem Operasi (OS)</strong> yang mengatur semua program dan memori.
+              </p>
+              <div class="text-[11px] font-black text-blue-600 flex items-center gap-1">
+                <span>Sedang dipilih</span> ➔
+              </div>
+            </div>
+
+            <!-- Apps -->
+            <div id="card-apps" onclick="selectAnalogy('apps')" class="cursor-pointer p-5 rounded-3xl border-3 border-slate-200 hover:border-emerald-400 bg-white shadow-xs transition sticker-card space-y-3">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl">
+                🎨
+              </div>
+              <div>
+                <span class="text-[10px] font-black uppercase text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full">Aktivitas / Kegiatan</span>
+                <h4 class="font-black text-base text-slate-800 heading-font mt-1">Pelajaran & Ekskul</h4>
+              </div>
+              <p class="text-xs text-slate-500 font-semibold leading-relaxed">
+                Di komputer, ini adalah <strong>Aplikasi (Software)</strong> seperti Game, Word, YouTube, dan Spotify.
+              </p>
+              <div class="text-[11px] font-black text-emerald-600 flex items-center gap-1">
+                <span>Klik untuk pelajari</span> ➔
+              </div>
+            </div>
+          </div>
+
+        <div id="analogy-detail-box" class="bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-950 text-white p-6 rounded-3xl mt-4 relative overflow-hidden transition-all duration-300 border-4 border-indigo-400/40 shadow-xl">
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="space-y-1.5">
+              <div class="inline-flex items-center gap-1.5 text-amber-300 text-xs font-black uppercase tracking-wider bg-amber-400/20 px-3 py-1 rounded-full border border-amber-300/30">
+                <span>💡</span> Kotak Rahasia Belajar:
+              </div>
+              <h4 id="detail-title" class="text-xl md:text-2xl font-black text-amber-300 heading-font">
+                Kepala Sekolah = Sistem Operasi (OS)
+              </h4>
+              <p id="detail-desc" class="text-blue-100 text-sm max-w-3xl leading-relaxed font-medium">
+                Tanpa Kepala Sekolah, semua guru dan murid akan berebut ruang kelas secara bersamaan! Sistem Operasi (seperti Windows, Android, macOS) bertugas membagi jatah memori (RAM) dan otak komputer (CPU) ke setiap aplikasi agar komputer tidak macet atau nge-lag.
+              </p>
+            </div>
+            <div class="flex flex-col sm:flex-row gap-2 shrink-0">
+              <button onclick="playSchoolBell()" class="bubble-btn px-4 py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-amber-500 shadow-lg">
+                <span>🔔</span> Bunyikan Bel Masuk!
+              </button>
+              <button onclick="playWhistleSound()" class="bubble-btn px-4 py-3 bg-emerald-400 hover:bg-emerald-300 text-emerald-950 rounded-2xl font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 border-2 border-emerald-600 shadow-lg">
+                <span>📣</span> Pengumuman OS!
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 Tugas Sakti Kepala Sekolah di Komputer Kita -->
+        <div class="pt-2">
+          <h4 class="font-black text-slate-800 text-lg mb-3 flex items-center gap-2 heading-font">
+            <span class="text-xl">⭐</span> 3 Tugas Sakti Kepala Sekolah di Komputer Kita:
+          </h4>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs md:text-sm">
+            <div class="bg-blue-50/80 p-5 rounded-3xl border-3 border-blue-200 space-y-2 shadow-sm">
+              <div class="font-black text-blue-950 flex items-center gap-2 text-base heading-font">
+                <span class="w-7 h-7 rounded-2xl bg-blue-500 text-white inline-flex items-center justify-center font-black text-sm shadow">1</span>
+                Pengatur Jadwal & Ruang Kelas (RAM)
+              </div>
+              <p class="text-slate-600 font-semibold leading-relaxed">
+                Memastikan saat kamu main game sambil mendengarkan musik, kedua aplikasi mendapat ruangan terpisah di memori agar tidak bentrok!
+              </p>
+            </div>
+            <div class="bg-amber-50/80 p-5 rounded-3xl border-3 border-amber-200 space-y-2 shadow-sm">
+              <div class="font-black text-amber-950 flex items-center gap-2 text-base heading-font">
+                <span class="w-7 h-7 rounded-2xl bg-amber-500 text-white inline-flex items-center justify-center font-black text-sm shadow">2</span>
+                Papan Mading Bergambar Cantik (GUI)
+              </div>
+              <p class="text-slate-600 font-semibold leading-relaxed">
+                Menyediakan ikon aplikasi lucu, tombol menu, dan kursor panah di layar agar kamu tinggal klik dengan mudah seperti melihat mading sekolah.
+              </p>
+            </div>
+            <div class="bg-emerald-50/80 p-5 rounded-3xl border-3 border-emerald-200 space-y-2 shadow-sm">
+              <div class="font-black text-emerald-950 flex items-center gap-2 text-base heading-font">
+                <span class="w-7 h-7 rounded-2xl bg-emerald-500 text-white inline-flex items-center justify-center font-black text-sm shadow">3</span>
+                Satpam Penjaga Gerbang Sekolah
+              </div>
+              <p class="text-slate-600 font-semibold leading-relaxed">
+                Menjaga password login, mengunci dokumen pribadimu, dan mengusir virus jahat yang mencoba menyusup ke komputer!
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: MINI GAME SIMULASI KEPALA SEKOLAH (RUANG KELAS RAM) -->
+    <section id="tab-simulasi" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-3xl p-6 border-4 border-amber-200/80 shadow-md space-y-6">
+        <div class="flex flex-col md:flex-row justify-between md:items-center gap-2 border-b-2 border-amber-100 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🎮</span>
+              <h3 class="text-2xl font-black text-slate-800 heading-font">2. Mini Game: Kamu Adalah Kepala Sekolah!</h3>
+            </div>
+            <p class="text-slate-500 text-sm font-semibold">Tugasmu: Beri ruang kelas untuk mata pelajaran. Awas! Ruang kelas hanya muat maksimal 3 kegiatan!</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-xs bg-amber-100 text-amber-950 px-3.5 py-2 rounded-2xl font-black border-2 border-amber-300 shadow-sm">
+              Ruang Terisi: <strong id="ram-indicator" class="text-blue-700 text-sm">0 / 3 Kelas Aktif</strong>
+            </span>
+            <button onclick="resetSimulation()" class="bubble-btn text-xs bg-rose-500 hover:bg-rose-600 font-black px-3.5 py-2 rounded-2xl text-white transition border-2 border-rose-600">
+              Kosongkan Semua 🔄
+            </button>
+          </div>
+        </div>
+
+        <!-- Simulation Arena -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          
+          <!-- Left: Daftar Pelajaran yang Ingin Masuk Kelas -->
+          <div class="lg:col-span-5 bg-gradient-to-b from-amber-50/70 to-orange-50/60 p-5 rounded-3xl border-3 border-amber-200 space-y-3 shadow-inner">
+            <div class="flex items-center justify-between">
+              <h4 class="font-black text-slate-800 text-sm flex items-center gap-2 heading-font">
+                <span>📚</span> Daftar Pelajaran / Aplikasi (Klik 'Mulai'):
+              </h4>
+            </div>
+
+            <div class="space-y-3" id="bus-queue-container">
+              <!-- Item 1: Game -->
+              <div id="queue-bus-game" class="bg-white p-3.5 rounded-2xl border-2 border-slate-200 hover:border-purple-400 shadow-sm flex items-center justify-between transition">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-purple-100 flex items-center justify-center text-2xl shadow-inner">🎮</div>
+                  <div>
+                    <div class="font-black text-slate-800 text-sm heading-font">Pelajaran Game (Roblox/Minecraft)</div>
+                    <div class="text-[11px] text-purple-600 font-bold">Butuh 1 Ruang Kelas Memori (RAM)</div>
+                  </div>
+                </div>
+                <button onclick="launchBus('game')" class="bubble-btn bg-purple-600 hover:bg-purple-700 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-purple-700">
+                  Mulai ➔
+                </button>
+              </div>
+
+              <!-- Item 2: YouTube -->
+              <div id="queue-bus-youtube" class="bg-white p-3.5 rounded-2xl border-2 border-slate-200 hover:border-red-400 shadow-sm flex items-center justify-between transition">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-red-100 flex items-center justify-center text-2xl shadow-inner">📺</div>
+                  <div>
+                    <div class="font-black text-slate-800 text-sm heading-font">Pelajaran Video (YouTube Animasi)</div>
+                    <div class="text-[11px] text-red-600 font-bold">Butuh 1 Ruang Kelas Memori (RAM)</div>
+                  </div>
+                </div>
+                <button onclick="launchBus('youtube')" class="bubble-btn bg-red-600 hover:bg-red-700 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-red-700">
+                  Mulai ➔
+                </button>
+              </div>
+
+              <!-- Item 3: Word -->
+              <div id="queue-bus-word" class="bg-white p-3.5 rounded-2xl border-2 border-slate-200 hover:border-blue-400 shadow-sm flex items-center justify-between transition">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-blue-100 flex items-center justify-center text-2xl shadow-inner">📝</div>
+                  <div>
+                    <div class="font-black text-slate-800 text-sm heading-font">Pelajaran Menulis (Ketik Word)</div>
+                    <div class="text-[11px] text-blue-600 font-bold">Butuh 1 Ruang Kelas Memori (RAM)</div>
+                  </div>
+                </div>
+                <button onclick="launchBus('word')" class="bubble-btn bg-blue-600 hover:bg-blue-700 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-blue-700">
+                  Mulai ➔
+                </button>
+              </div>
+
+              <!-- Item 4: Musik -->
+              <div id="queue-bus-music" class="bg-white p-3.5 rounded-2xl border-2 border-slate-200 hover:border-emerald-400 shadow-sm flex items-center justify-between transition">
+                <div class="flex items-center gap-3">
+                  <div class="w-11 h-11 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl shadow-inner">🎵</div>
+                  <div>
+                    <div class="font-black text-slate-800 text-sm heading-font">Ekskul Seni Musik (Spotify Lagu)</div>
+                    <div class="text-[11px] text-emerald-600 font-bold">Butuh 1 Ruang Kelas Memori (RAM)</div>
+                  </div>
+                </div>
+                <button onclick="launchBus('music')" class="bubble-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black px-3.5 py-2 rounded-xl border border-emerald-700">
+                  Mulai ➔
+                </button>
+              </div>
+            </div>
+
+            <!-- Terminal Info Alert -->
+            <div id="terminal-alert" class="hidden p-3.5 rounded-2xl text-xs font-black flex items-center gap-2 border-2 shadow-sm"></div>
+          </div>
+
+          <!-- Right: Ruang Kelas Terisi (RAM Slot Aktif) -->
+          <div class="lg:col-span-7 bg-slate-900 text-white p-6 rounded-3xl shadow-xl space-y-4 border-4 border-slate-700">
+            <div class="flex items-center justify-between border-b-2 border-slate-800 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-ping"></span>
+                <span class="font-black text-sm tracking-wide uppercase text-amber-300 heading-font">Ruang Kelas Aktif (RAM Komputer)</span>
+              </div>
+              <span class="text-xs bg-amber-400/20 text-amber-300 border border-amber-400/30 px-2.5 py-1 rounded-full font-black">Kapasitas Maksimal 3 Kelas!</span>
+            </div>
+
+            <!-- Classroom Slots -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+              <!-- Slot 1 -->
+              <div id="peron-slot-1" class="h-40 rounded-2xl border-3 border-dashed border-slate-700 bg-slate-800/50 p-3.5 flex flex-col justify-between items-center text-center transition-all duration-300">
+                <div class="text-[10px] uppercase font-black text-slate-400 tracking-wider">Ruang Kelas 1 (RAM #1)</div>
+                <div class="slot-content text-slate-400 font-bold text-xs flex flex-col items-center gap-1">
+                  <span class="text-2xl opacity-40">🚪</span>
+                  <span>Kelas Kosong</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-700 rounded-full"></div>
+              </div>
+
+              <!-- Slot 2 -->
+              <div id="peron-slot-2" class="h-40 rounded-2xl border-3 border-dashed border-slate-700 bg-slate-800/50 p-3.5 flex flex-col justify-between items-center text-center transition-all duration-300">
+                <div class="text-[10px] uppercase font-black text-slate-400 tracking-wider">Ruang Kelas 2 (RAM #2)</div>
+                <div class="slot-content text-slate-400 font-bold text-xs flex flex-col items-center gap-1">
+                  <span class="text-2xl opacity-40">🚪</span>
+                  <span>Kelas Kosong</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-700 rounded-full"></div>
+              </div>
+
+              <!-- Slot 3 -->
+              <div id="peron-slot-3" class="h-40 rounded-2xl border-3 border-dashed border-slate-700 bg-slate-800/50 p-3.5 flex flex-col justify-between items-center text-center transition-all duration-300">
+                <div class="text-[10px] uppercase font-black text-slate-400 tracking-wider">Ruang Kelas 3 (RAM #3)</div>
+                <div class="slot-content text-slate-400 font-bold text-xs flex flex-col items-center gap-1">
+                  <span class="text-2xl opacity-40">🚪</span>
+                  <span>Kelas Kosong</span>
+                </div>
+                <div class="w-full h-1.5 bg-slate-700 rounded-full"></div>
+              </div>
+            </div>
+
+            <!-- Status Papan Pengumuman Digital -->
+            <div class="bg-black/70 p-4 rounded-2xl border-2 border-slate-800 text-xs space-y-2">
+              <div class="text-amber-400 font-mono font-black flex items-center justify-between">
+                <span>[PAPAN PENGUMUMAN SEKOLAH]</span>
+                <span id="terminal-clock" class="text-emerald-400">STATUS: TERTIB</span>
+              </div>
+              <p id="terminal-log" class="text-slate-300 font-mono leading-relaxed">
+                > Kepala Sekolah (Sistem Operasi) siap mengawasi. Semua ruang belajar tertib dan lancar.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-5 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-3xl border-3 border-amber-300 text-xs text-amber-950 space-y-1.5 shadow-sm">
+          <div class="font-black flex items-center gap-2 text-sm text-amber-950 heading-font">
+            <span class="text-xl">🌟</span> Pelajaran Penting untuk Kamu:
+          </div>
+          <p class="font-semibold leading-relaxed">
+            Jika di sekolah tidak ada <strong>Kepala Sekolah / Guru Piket</strong>, semua murid akan berebut ruang kelas secara sembarangan. Di komputer, jika kapasitas RAM sudah penuh (3/3), Sistem Operasi akan dengan tegas menolak aplikasi baru sampai kamu menutup salah satu aplikasi lama. Itulah rahasia kenapa komputer tidak langsung meledak atau macet total!
+          </p>
+        </div>
+      </div>
+    </section>
+    <!-- TAB 3: GALERI SAHABAT SISTEM OPERASI -->
+    <section id="tab-galeri" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-3xl p-6 border-4 border-amber-200/80 shadow-md space-y-5">
+        <div class="border-b-2 border-amber-100 pb-4">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">🦸‍♂️</span>
+            <h3 class="text-2xl font-black text-slate-800 heading-font">3. Karakter Superhero Sistem Operasi</h3>
+          </div>
+          <p class="text-slate-500 text-sm font-semibold">Sama seperti pahlawan super, setiap Sistem Operasi punya kekuatan khusus di perangkat berbeda!</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- Windows -->
+          <div class="sticker-card p-5 rounded-3xl border-4 border-blue-200 bg-gradient-to-b from-blue-50/60 to-white shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="w-14 h-14 rounded-3xl bg-blue-500 text-white flex items-center justify-center text-3xl font-bold shadow-md shadow-blue-200">
+                🪟
+              </div>
+              <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full border border-blue-200">Raja Lab Komputer</span>
+              <h4 class="font-black text-lg text-slate-800 heading-font">Mr. Windows</h4>
+              <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                Sering kalian jumpai di lab sekolah, laptop orang tua, dan PC gaming. Sangat jago dipakai mengetik tugas dan main game komputer.
+              </p>
+            </div>
+            <div class="pt-3 border-t-2 border-blue-100 text-xs font-black text-blue-700 flex items-center gap-1.5">
+              <i data-lucide="laptop" class="w-4 h-4 text-blue-600"></i> Tempat Tinggal: PC & Laptop
+            </div>
+          </div>
+
+          <!-- Android -->
+          <div class="sticker-card p-5 rounded-3xl border-4 border-emerald-200 bg-gradient-to-b from-emerald-50/60 to-white shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="w-14 h-14 rounded-3xl bg-emerald-500 text-white flex items-center justify-center text-3xl font-bold shadow-md shadow-emerald-200">
+                🤖
+              </div>
+              <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full border border-emerald-200">Paling Populer di HP</span>
+              <h4 class="font-black text-lg text-slate-800 heading-font">Robot Hijau Android</h4>
+              <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                Dibuat oleh Google. Ada di jutaan HP (Samsung, Xiaomi, Oppo), tablet sekolah, dan Smart TV. Sangat ramah layar sentuh!
+              </p>
+            </div>
+            <div class="pt-3 border-t-2 border-emerald-100 text-xs font-black text-emerald-700 flex items-center gap-1.5">
+              <i data-lucide="smartphone" class="w-4 h-4 text-emerald-600"></i> Tempat Tinggal: Smartphone & Tablet
+            </div>
+          </div>
+
+          <!-- macOS / iOS -->
+          <div class="sticker-card p-5 rounded-3xl border-4 border-slate-300 bg-gradient-to-b from-slate-100/60 to-white shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="w-14 h-14 rounded-3xl bg-slate-800 text-white flex items-center justify-center text-3xl font-bold shadow-md">
+                🍎
+              </div>
+              <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 bg-slate-200 text-slate-800 rounded-full border border-slate-300">Keluarga Apple</span>
+              <h4 class="font-black text-lg text-slate-800 heading-font">macOS & iOS</h4>
+              <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                Hanya tinggal di perangkat buatan Apple! <strong>macOS</strong> di laptop MacBook yang keren, dan <strong>iOS</strong> di smartphone iPhone & iPad.
+              </p>
+            </div>
+            <div class="pt-3 border-t-2 border-slate-200 text-xs font-black text-slate-800 flex items-center gap-1.5">
+              <i data-lucide="tablet" class="w-4 h-4 text-slate-800"></i> Tempat Tinggal: MacBook & iPhone
+            </div>
+          </div>
+
+          <!-- Linux -->
+          <div class="sticker-card p-5 rounded-3xl border-4 border-amber-300 bg-gradient-to-b from-amber-50/60 to-white shadow-sm space-y-3 flex flex-col justify-between">
+            <div class="space-y-3">
+              <div class="w-14 h-14 rounded-3xl bg-amber-400 text-amber-950 flex items-center justify-center text-3xl font-bold shadow-md shadow-amber-200">
+                🐧
+              </div>
+              <span class="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 bg-amber-100 text-amber-900 rounded-full border border-amber-300">Si Pinguin Tangguh</span>
+              <h4 class="font-black text-lg text-slate-800 heading-font">Pinguin Linux (Tux)</h4>
+              <p class="text-xs text-slate-600 leading-relaxed font-semibold">
+                Sistem operasi gratis dan kebal dari virus jahat! Dipakai oleh ilmuwan roket luar angkasa, robot canggih, dan komputer server internet.
+              </p>
+            </div>
+            <div class="pt-3 border-t-2 border-amber-200 text-xs font-black text-amber-800 flex items-center gap-1.5">
+              <i data-lucide="server" class="w-4 h-4 text-amber-700"></i> Tempat Tinggal: Komputer Server & Lab
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Comparison Box for Classroom Discussion -->
+        <div class="p-5 bg-gradient-to-r from-blue-100 via-indigo-100 to-purple-100 rounded-3xl border-3 border-blue-200 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+          <div class="space-y-1">
+            <h5 class="font-black text-blue-950 text-base flex items-center gap-2 heading-font">
+              <span>🎯</span> Tebak Cepat di Kelas:
+            </h5>
+            <p class="text-xs md:text-sm text-blue-900 font-bold">
+              "Kalau HP ibumu ada aplikasi Google Play Store dan gambar robot hijau kecil, sistem operasi apa itu?"
+            </p>
+          </div>
+          <button onclick="revealQuickAnswer()" class="bubble-btn px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs shrink-0 border border-blue-700">
+            Buka Kunci Jawaban 💡
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: KUIS INTERAKTIF DENGAN SERTIFIKAT DIGITAL -->
+    <section id="tab-kuis" class="tab-content hidden space-y-6">
+      <div class="bg-white rounded-3xl p-6 border-4 border-amber-200/80 shadow-md space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 border-b-2 border-amber-100 pb-4">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">🏆</span>
+              <h3 class="text-2xl font-black text-slate-800 heading-font">4. Ujian Lencana "Kepala Sekolah Digital"</h3>
+            </div>
+            <p class="text-slate-500 text-sm font-semibold">Jawab 5 tantangan seru ini dan menangkan sertifikat kehormatan digital!</p>
+          </div>
+          <div class="flex items-center gap-2 self-start">
+            <span class="text-xs font-black px-4 py-1.5 bg-amber-100 text-amber-900 rounded-full border-2 border-amber-300 shadow-sm">
+              Skor: <span id="current-score" class="text-sm font-black text-blue-600">0</span> / 100 ⭐
+            </span>
+          </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-question-box" class="space-y-5 max-w-2xl mx-auto py-2">
+          <!-- Question Header -->
+          <div class="flex items-center justify-between text-xs font-black text-slate-500">
+            <span id="quiz-progress-text">Soal 1 dari 5</span>
+            <div class="w-36 bg-amber-100 h-3 rounded-full overflow-hidden border border-amber-200">
+              <div id="quiz-progress-bar" class="bg-gradient-to-r from-amber-400 to-amber-500 h-full w-1/5 transition-all duration-300"></div>
+            </div>
+          </div>
+
+          <!-- Question Prompt -->
+          <div class="bg-gradient-to-r from-amber-50 to-orange-50 p-5 rounded-3xl border-3 border-amber-200 space-y-2 shadow-inner">
+            <span id="question-badge" class="text-[10px] font-black uppercase tracking-wider bg-amber-400 text-amber-950 px-2.5 py-0.5 rounded-full border border-amber-300">Tantangan Teori</span>
+            <h4 id="question-text" class="text-lg md:text-xl font-black text-slate-800 leading-snug heading-font">
+              Dalam analogi sekolah dasar, siapakah yang berperan sebagai "Sistem Operasi"?
+            </h4>
+          </div>
+
+          <!-- Options -->
+          <div id="quiz-options-container" class="grid grid-cols-1 gap-3">
+            <!-- Rendered by JS -->
+          </div>
+
+          <!-- Feedback Toast -->
+          <div id="quiz-feedback" class="hidden p-4 rounded-2xl text-xs md:text-sm font-bold items-center gap-3 border-2"></div>
+        </div>
+
+        <!-- Result Screen with Custom Name Input -->
+        <div id="quiz-result-box" class="hidden text-center space-y-6 py-4 max-w-xl mx-auto">
+          <div class="w-24 h-24 mx-auto rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center text-5xl shadow-md border-3 border-amber-300 animate-bob">
+            🏆
+          </div>
+          <div class="space-y-1">
+            <h4 class="text-3xl font-black text-slate-800 heading-font">Luar Biasa! Kamu Lulus! 🎉</h4>
+            <p id="result-summary" class="text-slate-600 text-sm font-semibold">
+              Kamu berhasil menguasai materi dasar Sistem Operasi dengan sangat hebat!
+            </p>
+          </div>
+
+          <!-- Name Customizer Input -->
+          <div class="bg-amber-100/70 p-4 rounded-3xl border-2 border-amber-300 text-left space-y-2 max-w-md mx-auto">
+            <label for="student-input" class="text-xs font-black text-amber-950 flex items-center gap-1.5">
+              <span>✍️</span> Tuliskan Namamu untuk Dicetak di Sertifikat:
+            </label>
+            <div class="flex gap-2">
+              <input type="text" id="student-input" placeholder="Ketik namamu di sini..." class="flex-1 px-3.5 py-2 rounded-2xl border-2 border-amber-300 text-sm font-bold text-slate-800 outline-none focus:border-blue-500" value="Bintang Informatika Kelas 6">
+              <button onclick="updateCertName()" class="bubble-btn bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2 rounded-2xl">
+                Terapkan
+              </button>
+            </div>
+          </div>
+
+          <!-- Digital Badge Card with School Stamps -->
+          <div class="bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-200 p-7 rounded-3xl shadow-xl border-4 border-white text-slate-900 space-y-4 relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 text-7xl opacity-20 pointer-events-none select-none">
+              🏫
+            </div>
+            <div class="text-xs uppercase tracking-widest font-black text-amber-900 bg-white/40 inline-block px-3 py-1 rounded-full border border-amber-600/30">
+              🏅 Piagam Lencana Digital 🏅
+            </div>
+            <div>
+              <div class="text-2xl md:text-3xl font-black heading-font text-slate-900" id="cert-student-name">
+                Bintang Informatika Kelas 6
+              </div>
+              <p class="text-xs text-amber-950 font-bold max-w-md mx-auto mt-1">
+                Telah berhasil menyelesaikan petualangan dan menyandang gelar kehormatan: <br>
+                <span class="text-base font-black text-blue-900 underline decoration-wavy">"Kepala Sekolah Komputer Hebat"</span>
+              </p>
+            </div>
+
+            <div class="text-[11px] font-bold text-amber-950 pt-3 border-t-2 border-amber-500/40 flex justify-around">
+              <span>Mata Pelajaran: Informatika</span>
+              <span>⭐ Nilai: Sempurna ⭐</span>
+            </div>
+          </div>
+
+          <div class="flex justify-center gap-3">
+            <button onclick="restartQuiz()" class="bubble-btn px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-xs shadow">
+              Ulangi Kuis 🔄
+            </button>
+            <button onclick="navigateTab('tab-peta')" class="bubble-btn px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-800 rounded-2xl font-black text-xs">
+              Kembali ke Materi 📖
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal Panduan Guru -->
+  <div id="modal-guru" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-2xl w-full p-6 space-y-4 max-h-[90vh] overflow-y-auto custom-scroll shadow-2xl">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="p-2 bg-blue-100 text-blue-700 rounded-xl">👨‍🏫</span>
+          <h3 class="text-xl font-bold text-slate-800">Panduan Mengajar Guru Kelas 6</h3>
+        </div>
+        <button onclick="closeModal('modal-guru')" class="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs md:text-sm text-slate-600 leading-relaxed">
+        <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200 text-amber-900">
+          <strong>Tujuan Pembelajaran:</strong> Peserta didik mampu mengidentifikasi peran Sistem Operasi sebagai pengatur antara perangkat keras (*hardware*), aplikasi (*software*), dan pengguna (*user*) melalui analogi lingkungan sekolah dasar.
+        </div>
+
+        <h4 class="font-bold text-slate-800 text-base">Alur 45 Menit di Kelas Menggunakan Web Ini:</h4>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>
+            <strong>Menit 01-10 (Apersepsi):</strong> Buka Tab <em>Cerita Sekolah</em>. Ajak anak membayangkan sekolah mereka. Tanyakan: <em>"Apa yang terjadi kalau di sekolah kita tidak ada Kepala Sekolah atau guru piket yang membunyikan bel?"</em>
+          </li>
+          <li>
+            <strong>Menit 11-20 (Simulasi Langsung):</strong> Panggil 1 atau 2 murid ke depan kelas untuk bermain peran sebagai Kepala Sekolah di Tab <em>Game Ruang Kelas</em>. Tunjukkan kondisi saat kelas penuh (RAM overload 3 slot) dan bagaimana OS mencegah komputer macet.
+          </li>
+          <li>
+            <strong>Menit 21-30 (Eksplorasi Sahabat OS):</strong> Buka Tab <em>Sahabat OS</em>. Kenalkan superhero Windows, Android, Apple (macOS/iOS), dan Linux.
+          </li>
+          <li>
+            <strong>Menit 31-40 (Kuis Lencana):</strong> Kerjakan kuis bersama di proyektor kelas atau komputer lab masing-masing murid.
+          </li>
+          <li>
+            <strong>Menit 41-45 (Refleksi):</strong> Satu murid menyimpulkan dalam 1 kalimat: <em>"Sistem operasi adalah kepala sekolah yang mengatur seluruh ruang dan kegiatan di komputer."</em>
+          </li>
+        </ol>
+
+        <div class="pt-2 flex justify-end">
+          <button onclick="closeModal('modal-guru')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs">
+            Mengerti & Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Message Toast Container -->
+  <div id="toast" class="fixed bottom-4 right-4 z-50 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+    <div id="toast-body" class="bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 border border-slate-700">
+      <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
+      <span id="toast-text">Pesan notifikasi</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-6 text-center text-xs text-slate-400 space-y-1">
+    <p>Media Pembelajaran Berbasis Web Informatika - Analogi Terminal Bus Komputer</p>
+    <p class="font-medium text-slate-500">Dirancang khusus untuk kurikulum anak usia 11–12 tahun (Kelas 6 Sekolah Dasar)</p>
+  </footer>
+
+  <script>
+    /* =========================================================
+       AUDIO FX (Tone.js Synthesizers)
+       ========================================================= */
+    let soundEnabled = true;
+    let synth, whistleSynth, bellSynth;
+
+    function initAudio() {
+      if (!synth && window.Tone) {
+        try {
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "triangle" },
+            envelope: { attack: 0.02, decay: 0.1, sustain: 0.2, release: 0.4 }
+          }).toDestination();
+          synth.volume.value = -6;
+
+          // Peluit / Speaker Pengumuman
+          whistleSynth = new Tone.Synth({
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.05, decay: 0.2, sustain: 0.8, release: 0.1 }
+          }).toDestination();
+          whistleSynth.volume.value = -4;
+
+          // Bel Sekolah Melodi Elegan (Teng - Nong - Deng 🔔)
+          bellSynth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: "sine" },
+            envelope: { attack: 0.02, decay: 0.6, sustain: 0.1, release: 0.8 }
+          }).toDestination();
+          bellSynth.volume.value = -4;
+        } catch (e) {
+          console.log("Audio context standby");
+        }
+      }
+    }
+
+    function playSchoolBell() {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        // Melodi bel sekolah klasik (Do - Mi - Sol - Do Tinggi)
+        const now = Tone.now();
+        bellSynth.triggerAttackRelease("C5", "4n", now);
+        bellSynth.triggerAttackRelease("E5", "4n", now + 0.35);
+        bellSynth.triggerAttackRelease("G5", "4n", now + 0.70);
+        bellSynth.triggerAttackRelease("C6", "2n", now + 1.05);
+      } catch (e) {}
+      showToast("🔔 TENG NONG DENG! Bel masuk sekolah berbunyi!");
+    }
+
+    function updateCertName() {
+      playClickSound();
+      const input = document.getElementById('student-input');
+      const name = input.value.trim() || "Murid Hebat Kelas 6";
+      document.getElementById('cert-student-name').innerText = name;
+      showToast(`Nama sertifikat diubah ke: ${name} ⭐`);
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const icon = document.getElementById('sound-icon');
+      const sIcon = document.getElementById('sidebar-sound-icon');
+      const sText = document.getElementById('sidebar-sound-text');
+      
+      if (soundEnabled) {
+        if (icon) icon.setAttribute('data-lucide', 'volume-2');
+        if (sIcon) sIcon.setAttribute('data-lucide', 'volume-2');
+        if (sText) sText.innerText = 'Nyala';
+        showToast("Suara Diaktifkan 🔊");
+      } else {
+        if (icon) icon.setAttribute('data-lucide', 'volume-x');
+        if (sIcon) sIcon.setAttribute('data-lucide', 'volume-x');
+        if (sText) sText.innerText = 'Bisu';
+        showToast("Suara Dimatikan 🔇");
+      }
+      lucide.createIcons();
+    }
+
+    function playClickSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        synth.triggerAttackRelease("C5", "16n");
+      } catch (e) {}
+    }
+
+    function playSuccessSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        synth.triggerAttackRelease(["E5", "G5", "C6"], "8n");
+      } catch (e) {}
+    }
+
+    function playErrorSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        synth.triggerAttackRelease(["C3", "B2"], "8n");
+      } catch (e) {}
+    }
+
+    function playWhistleSound() {
+      if (!soundEnabled) return;
+      initAudio();
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        whistleSynth.triggerAttackRelease("B6", "16n");
+        setTimeout(() => whistleSynth.triggerAttackRelease("B6", "8n"), 150);
+      } catch (e) {}
+      showToast("📢 Pengumuman: Kepala Sekolah meminta murid tetap tertib!");
+    }
+
+    /* =========================================================
+       TAB NAVIGATION & SMART SIDEBAR LOGIC
+       ========================================================= */
+    const visitedModules = new Set(['tab-peta']);
+    const moduleTitles = {
+      'tab-peta': { title: 'Bab 1: Cerita Sekolah', emoji: '🗺️' },
+      'tab-simulasi': { title: 'Bab 2: Game Ruang Kelas', emoji: '🎮' },
+      'tab-galeri': { title: 'Bab 3: Sahabat OS', emoji: '🦸‍♂️' },
+      'tab-kuis': { title: 'Bab 4: Kuis Lencana', emoji: '🏆' }
+    };
+
+    let isSidebarOpen = window.innerWidth >= 1024;
+
+    function initSidebar() {
+      const isDesktop = window.innerWidth >= 1024;
+      isSidebarOpen = isDesktop;
+      const sidebar = document.getElementById('smart-sidebar');
+      const mainWrapper = document.getElementById('main-content-wrapper');
+      if (isDesktop) {
+        sidebar.classList.remove('-translate-x-full');
+        mainWrapper.classList.add('lg:ml-72');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        mainWrapper.classList.remove('lg:ml-72');
+      }
+    }
+
+    function toggleSidebar(forceState) {
+      playClickSound();
+      const sidebar = document.getElementById('smart-sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const mainWrapper = document.getElementById('main-content-wrapper');
+
+      if (typeof forceState === 'boolean') {
+        isSidebarOpen = forceState;
+      } else {
+        isSidebarOpen = !isSidebarOpen;
+      }
+
+      const isDesktop = window.innerWidth >= 1024;
+
+      if (isSidebarOpen) {
+        sidebar.classList.remove('-translate-x-full');
+        if (isDesktop) {
+          mainWrapper.classList.add('lg:ml-72');
+          backdrop.classList.add('hidden', 'opacity-0');
+        } else {
+          backdrop.classList.remove('hidden');
+          setTimeout(() => backdrop.classList.remove('opacity-0'), 10);
+        }
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        if (isDesktop) {
+          mainWrapper.classList.remove('lg:ml-72');
+        }
+        backdrop.classList.add('opacity-0');
+        setTimeout(() => backdrop.classList.add('hidden'), 300);
+      }
+      lucide.createIcons();
+    }
+
+    // Keyboard shortcut: tekan Escape untuk menutup sidebar jika terbuka
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isSidebarOpen) {
+        toggleSidebar(false);
+      }
+    });
+
+    function navigateTab(tabId) {
+      playClickSound();
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.add('hidden');
+        tab.classList.remove('block');
+      });
+
+      // Show selected
+      const target = document.getElementById(tabId);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('block');
+      }
+
+      // Record progress
+      visitedModules.add(tabId);
+      updateSidebarProgress();
+
+      // Update Topbar Title
+      if (moduleTitles[tabId]) {
+        document.getElementById('top-badge-title').innerText = moduleTitles[tabId].title;
+        document.getElementById('top-badge-emoji').innerText = moduleTitles[tabId].emoji;
+      }
+
+      // Update Sidebar Items active states
+      const tabKeys = ['peta', 'simulasi', 'galeri', 'kuis'];
+      tabKeys.forEach(t => {
+        const sbtn = document.getElementById(`sbtn-${t}`);
+        if (!sbtn) return;
+        if (`tab-${t}` === tabId) {
+          sbtn.className = "sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition bg-blue-50 text-blue-700 border-2 border-blue-200 shadow-xs";
+          const icon = sbtn.querySelector('[data-lucide="chevron-right"]');
+          if (icon) icon.classList.remove('opacity-0');
+        } else {
+          sbtn.className = "sidebar-item w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition text-slate-600 hover:bg-slate-100/80 border-2 border-transparent";
+          const icon = sbtn.querySelector('[data-lucide="chevron-right"]');
+          if (icon) icon.classList.add('opacity-0');
+        }
+      });
+
+      // Close sidebar automatically on mobile
+      if (window.innerWidth < 1024) {
+        toggleSidebar(false);
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function updateSidebarProgress() {
+      const count = visitedModules.size;
+      const pct = Math.min(100, Math.round((count / 4) * 100));
+      const fillEl = document.getElementById('sidebar-progress-fill');
+      const badgeEl = document.getElementById('sidebar-progress-badge');
+      const descEl = document.getElementById('sidebar-progress-desc');
+
+      if (fillEl) fillEl.style.width = `${pct}%`;
+      if (badgeEl) badgeEl.innerText = `${count}/4 Bab (${pct}%)`;
+      if (descEl) {
+        if (pct === 100) {
+          descEl.innerText = '🎉 Hebat! Semua materi telah kamu pelajari!';
+        } else {
+          descEl.innerText = `Masih ada ${4 - count} bab lagi untuk dijelajahi. Semangat!`;
+        }
+      }
+    }
+
+    // Dynamic Teacher Tips Cycler
+    const pakBudiTips = [
+      "\"Sistem Operasi ibarat Kepala Sekolah. Ia yang mengatur jam belajar agar komputer tidak macet!\"",
+      "\"Tanpa Sistem Operasi, komputer secanggih apa pun hanyalah kotak besi mati!\"",
+      "\"Memori RAM komputer itu seperti luas ruang kelas; jika terlalu banyak murid masuk, kelas jadi sesak!\"",
+      "\"Android di ponselmu dan Windows di laptop sekolah adalah dua sahabat OS yang berbeda tugas!\"",
+      "\"Jika komputer terasa lambat, tutuplah aplikasi yang sudah selesai dipakai agar RAM lega kembali.\""
+    ];
+    let tipIndex = 0;
+
+    function cycleTeacherTip() {
+      playClickSound();
+      tipIndex = (tipIndex + 1) % pakBudiTips.length;
+      const tipEl = document.getElementById('pak-budi-tip');
+      if (tipEl) {
+        tipEl.style.opacity = '0';
+        setTimeout(() => {
+          tipEl.innerText = pakBudiTips[tipIndex];
+          tipEl.style.opacity = '1';
+        }, 150);
+      }
+      showToast("💡 Tips dari Pak Budi berganti!");
+    }
+
+    /* =========================================================
+       MODULE 1: ANALOGY SELECTOR (SCHOOL THEME)
+       ========================================================= */
+    const analogyData = {
+      hardware: {
+        title: "Gedung & Meja Belajar = Perangkat Keras (Hardware)",
+        desc: "Ruang kelas, meja, kursi, dan papan tulis tidak bisa belajar sendiri tanpa ada guru dan murid. Sama seperti Layar Monitor, Keyboard, Mouse, dan CPU: semuanya hanya mesin mati tanpa Sistem Operasi yang menghidupkannya.",
+        cardId: "card-hardware"
+      },
+      os: {
+        title: "Kepala Sekolah & Guru Piket = Sistem Operasi (OS)",
+        desc: "Kepala Sekolah punya wewenang mengatur seluruh sekolah! Menentukan jadwal pelajaran, membagi ruang kelas (RAM), membunyikan bel, dan menjaga keamanan sekolah. Contoh Sistem Operasi: Windows, Android, macOS, Linux.",
+        cardId: "card-os"
+      },
+      apps: {
+        title: "Mata Pelajaran & Ekskul = Aplikasi (Software)",
+        desc: "Setiap mata pelajaran punya kegiatan khusus: Olahraga (Game Roblox), Mengetik Karangan (Word), Seni Musik (Spotify), Menonton Video Pembelajaran (YouTube). Semua pelajaran butuh ruang kelas yang disiapkan oleh Kepala Sekolah!",
+        cardId: "card-apps"
+      }
+    };
+
+    function selectAnalogy(type) {
+      playClickSound();
+      const item = analogyData[type];
+      document.getElementById('detail-title').innerText = item.title;
+      document.getElementById('detail-desc').innerText = item.desc;
+
+      // Highlight active card
+      ['card-hardware', 'card-os', 'card-apps'].forEach(id => {
+        const card = document.getElementById(id);
+        if (id === item.cardId) {
+          card.classList.add('border-blue-500', 'bg-blue-50/50', 'shadow-md');
+          card.classList.remove('border-slate-200');
+        } else {
+          card.classList.remove('border-blue-500', 'bg-blue-50/50', 'shadow-md');
+          card.classList.add('border-slate-200');
+        }
+      });
+    }
+
+    function revealQuickAnswer() {
+      playSuccessSound();
+      showToast("Jawabannya: ANDROID! 🤖 (Dibuat Google)");
+    }
+
+    /* =========================================================
+       MODULE 2: MINI GAME SIMULASI KEPALA SEKOLAH
+       ========================================================= */
+    const activeBuses = [];
+    const MAX_RAM_SLOTS = 3;
+
+    const busMetadata = {
+      game: { name: "Pelajaran Game (Roblox)", emoji: "🎮", color: "from-purple-500 to-indigo-600" },
+      youtube: { name: "Pelajaran Video (YouTube)", emoji: "📺", color: "from-red-500 to-rose-600" },
+      word: { name: "Pelajaran Menulis (Word)", emoji: "📝", color: "from-blue-500 to-cyan-600" },
+      music: { name: "Ekskul Musik (Spotify)", emoji: "🎵", color: "from-emerald-500 to-teal-600" }
+    };
+
+    function launchBus(busKey) {
+      initAudio();
+      // Check if already active
+      if (activeBuses.includes(busKey)) {
+        playErrorSound();
+        showTerminalAlert(`${busMetadata[busKey].name} sudah belajar di ruang kelas! Tidak bisa ganda.`, "bg-amber-100 text-amber-900");
+        return;
+      }
+
+      // Check if RAM full
+      if (activeBuses.length >= MAX_RAM_SLOTS) {
+        playErrorSound();
+        showTerminalAlert("⚠️ RUANG KELAS PENUH! Memori (RAM) Penuh (3/3). Kepala Sekolah meminta pelajaran lain menunggu!", "bg-red-500 text-white animate-pulse");
+        updateLog(`[DITOLAK KEPALA SEKOLAH] ${busMetadata[busKey].name} ingin masuk, namun semua ruang kelas (RAM) sudah 100% penuh. Tutup salah satu kelas dulu!`);
+        return;
+      }
+
+      // Add to classroom
+      activeBuses.push(busKey);
+      playSuccessSound();
+      renderPeronSlots();
+      updateLog(`[IZIN DIBERIKAN] ${busMetadata[busKey].name} berhasil menempati Ruang Kelas RAM.`);
+      showTerminalAlert(`✅ ${busMetadata[busKey].name} telah dimulai di ruang kelas!`, "bg-emerald-100 text-emerald-900");
+    }
+
+    function closeBus(busKey) {
+      playClickSound();
+      const idx = activeBuses.indexOf(busKey);
+      if (idx > -1) {
+        activeBuses.splice(idx, 1);
+        renderPeronSlots();
+        updateLog(`[KELAS SELESAI] ${busMetadata[busKey].name} telah selesai. 1 Ruang Kelas (RAM) kini kosong dan siap dipakai.`);
+        showTerminalAlert(`1 ruang kelas kembali kosong.`, "bg-blue-100 text-blue-900");
+      }
+    }
+
+    function renderPeronSlots() {
+      // Update Ram Indicator
+      document.getElementById('ram-indicator').innerText = `${activeBuses.length} / ${MAX_RAM_SLOTS} Kelas Aktif`;
+
+      for (let i = 1; i <= MAX_RAM_SLOTS; i++) {
+        const slotEl = document.getElementById(`peron-slot-${i}`);
+        const currentBusKey = activeBuses[i - 1];
+
+        if (currentBusKey) {
+          const data = busMetadata[currentBusKey];
+          slotEl.className = `h-40 rounded-2xl border-2 border-emerald-400 bg-gradient-to-b ${data.color} p-3 flex flex-col justify-between items-center text-center shadow-lg transition-all scale-100`;
+          slotEl.innerHTML = `
+            <div class="text-[10px] uppercase font-bold text-white/80 tracking-wider">Ruang Kelas ${i} Aktif</div>
+            <div class="flex flex-col items-center">
+              <span class="text-3xl animate-bounce">${data.emoji}</span>
+              <span class="text-xs font-bold text-white mt-1 leading-tight">${data.name}</span>
+            </div>
+            <button onclick="closeBus('${currentBusKey}')" class="w-full py-1 bg-white/20 hover:bg-white/30 text-white rounded-lg text-[10px] font-bold transition">
+              Selesai Belajar ✕
+            </button>
+          `;
+        } else {
+          slotEl.className = "h-40 rounded-2xl border-3 border-dashed border-slate-700 bg-slate-800/40 p-3.5 flex flex-col justify-between items-center text-center transition-all duration-300";
+          slotEl.innerHTML = `
+            <div class="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Ruang Kelas ${i} (RAM #${i})</div>
+            <div class="slot-content text-slate-400 font-bold text-xs flex flex-col items-center gap-1">
+              <span class="text-2xl opacity-40">🚪</span>
+              <span>Kelas Kosong</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-700 rounded-full"></div>
+          `;
+        }
+      }
+    }
+
+    function updateLog(message) {
+      const log = document.getElementById('terminal-log');
+      log.innerText = `> ${message}`;
+    }
+
+    function showTerminalAlert(msg, classes) {
+      const alert = document.getElementById('terminal-alert');
+      alert.className = `p-3 rounded-2xl text-xs font-bold flex items-center gap-2 ${classes}`;
+      alert.innerHTML = `<i data-lucide="info" class="w-4 h-4 shrink-0"></i><span>${msg}</span>`;
+      alert.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function resetSimulation() {
+      playClickSound();
+      activeBuses.length = 0;
+      renderPeronSlots();
+      document.getElementById('terminal-alert').classList.add('hidden');
+      updateLog("Kepala Sekolah telah mengosongkan semua ruang kelas (RAM). Sekolah siap untuk jam berikutnya.");
+      showToast("Semua ruang kelas telah dikosongkan!");
+    }
+
+    /* =========================================================
+       MODULE 4: KUIS INTERAKTIF (SEKOLAH THEME)
+       ========================================================= */
+    const quizData = [
+      {
+        question: "Dalam analogi sekolah dasar, siapakah yang berperan sebagai 'Sistem Operasi'?",
+        badge: "Analogi Dasar",
+        options: [
+          { text: "Pelajaran olahraga dan kesenian", correct: false },
+          { text: "Kepala Sekolah & Guru Piket yang mengatur kegiatan", correct: true },
+          { text: "Gedung sekolah, meja, dan kursi", correct: false },
+          { text: "Buku tulis dan pensil murid", correct: false }
+        ],
+        explanation: "Benar! Sistem Operasi bertindak seperti Kepala Sekolah yang mengatur jalannya seluruh program dan membagi memori."
+      },
+      {
+        question: "Apa yang terjadi jika komputer tidak memiliki Sistem Operasi sama sekali?",
+        badge: "Fungsi OS",
+        options: [
+          { text: "Komputer bisa dipakai mengetik tugas lebih cepat", correct: false },
+          { text: "Game Roblox otomatis terbuka sendiri", correct: false },
+          { text: "Komputer tidak bisa menyala dan tidak bisa menerima perintah", correct: true },
+          { text: "Layar monitor berubah warna menjadi emas", correct: false }
+        ],
+        explanation: "Tepat! Tanpa Sistem Operasi, komputer hanyalah benda fisik (hardware) mati yang tidak mengerti instruksi kita."
+      },
+      {
+        question: "Sistem operasi yang paling banyak digunakan pada smartphone seperti Samsung, Xiaomi, dan Oppo adalah...",
+        badge: "Kenali Brand",
+        options: [
+          { text: "Microsoft Windows", correct: false },
+          { text: "Linux Pinguin", correct: false },
+          { text: "Google Android", correct: true },
+          { text: "Apple macOS", correct: false }
+        ],
+        explanation: "Pintar! Android adalah sistem operasi ponsel terpopuler di dunia yang dibuat oleh Google."
+      },
+      {
+        question: "Dalam analogi sekolah, apa yang terjadi jika murid memaksa membuka terlalu banyak aplikasi berat sekaligus?",
+        badge: "Manajemen RAM",
+        options: [
+          { text: "Ruang kelas memori (RAM) penuh sesak sehingga komputer menjadi lag/hang", correct: true },
+          { text: "Keyboard akan langsung patah dua", correct: false },
+          { text: "Baterai laptop akan langsung meledak", correct: false },
+          { text: "Papan tulis sekolah akan terhapus sendiri", correct: false }
+        ],
+        explanation: "Hebat! Sama seperti ruang kelas yang terbatas, kapasitas RAM komputer memiliki batas penampungan."
+      },
+      {
+        question: "Berikut ini yang merupakan tugas dari Sistem Operasi adalah...",
+        badge: "Tugas Utama",
+        options: [
+          { text: "Menyediakan tampilan ikon, tombol menu, dan kursor mouse (GUI)", correct: true },
+          { text: "Memasak makanan siang untuk pengguna", correct: false },
+          { text: "Membeli seragam sekolah secara otomatis", correct: false },
+          { text: "Mencuci piring kotor di rumah", correct: false }
+        ],
+        explanation: "Luar biasa! OS membuat tampilan visual (Antarmuka Grafis) agar kita bisa mengklik folder dan menu dengan sangat mudah."
+      }
+    ];
+
+    let currentQuestionIdx = 0;
+    let score = 0;
+    let answered = false;
+
+    function renderQuestion() {
+      answered = false;
+      const q = quizData[currentQuestionIdx];
+      document.getElementById('quiz-progress-text').innerText = `Soal ${currentQuestionIdx + 1} dari ${quizData.length}`;
+      document.getElementById('quiz-progress-bar').style.width = `${((currentQuestionIdx + 1) / quizData.length) * 100}%`;
+      document.getElementById('question-badge').innerText = q.badge;
+      document.getElementById('question-text').innerText = q.question;
+
+      const optContainer = document.getElementById('quiz-options-container');
+      optContainer.innerHTML = '';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-4 rounded-2xl border-3 border-amber-100 hover:border-amber-400 bg-white hover:bg-amber-50/50 transition font-bold text-xs md:text-sm text-slate-700 flex items-center justify-between shadow-sm";
+        btn.innerHTML = `<span class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-amber-200 text-amber-900 inline-flex items-center justify-center text-xs font-black">${String.fromCharCode(65 + idx)}</span> ${opt.text}</span> <i data-lucide="circle" class="w-4 h-4 text-slate-300"></i>`;
+        btn.onclick = () => handleAnswer(opt, btn);
+        optContainer.appendChild(btn);
+      });
+
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.add('hidden');
+      lucide.createIcons();
+    }
+
+    function handleAnswer(option, btnElement) {
+      if (answered) return;
+      answered = true;
+      initAudio();
+
+      const q = quizData[currentQuestionIdx];
+      const feedback = document.getElementById('quiz-feedback');
+      feedback.classList.remove('hidden');
+
+      if (option.correct) {
+        score += 20;
+        playSuccessSound();
+        btnElement.classList.remove('border-slate-200', 'hover:border-blue-400');
+        btnElement.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-900');
+        feedback.className = "p-4 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 bg-emerald-100 text-emerald-900 border border-emerald-300";
+        feedback.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-600 shrink-0"></i> <span>Tepat Sekali! ${q.explanation}</span>`;
+      } else {
+        playErrorSound();
+        btnElement.classList.remove('border-slate-200', 'hover:border-blue-400');
+        btnElement.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-900');
+        feedback.className = "p-4 rounded-xl text-xs md:text-sm font-bold flex items-center gap-2 bg-rose-100 text-rose-900 border border-rose-300";
+        feedback.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5 text-rose-600 shrink-0"></i> <span>Kurang tepat. ${q.explanation}</span>`;
+      }
+
+      document.getElementById('current-score').innerText = score;
+      lucide.createIcons();
+
+      // Next Question Delay
+      setTimeout(() => {
+        if (currentQuestionIdx < quizData.length - 1) {
+          currentQuestionIdx++;
+          renderQuestion();
+        } else {
+          finishQuiz();
+        }
+      }, 2200);
+    }
+
+    function finishQuiz() {
+      document.getElementById('quiz-question-box').classList.add('hidden');
+      const resultBox = document.getElementById('quiz-result-box');
+      resultBox.classList.remove('hidden');
+
+      // Trigger Confetti Celebration
+      if (window.confetti) {
+        confetti({
+          particleCount: 80,
+          spread: 70,
+          origin: { y: 0.6 }
+        });
+      }
+
+      document.getElementById('result-summary').innerHTML = `Nilai Akhirmu: <strong class="text-blue-600 text-lg">${score} / 100</strong>. Kamu telah memahami konsep dasar Sistem Operasi dengan baik!`;
+    }
+
+    function restartQuiz() {
+      currentQuestionIdx = 0;
+      score = 0;
+      document.getElementById('current-score').innerText = '0';
+      document.getElementById('quiz-result-box').classList.add('hidden');
+      document.getElementById('quiz-question-box').classList.remove('hidden');
+      renderQuestion();
+    }
+
+    /* =========================================================
+       MODAL & TOAST HELPERS
+       ========================================================= */
+    function openModal(id) {
+      playClickSound();
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
+    }
+
+    function closeModal(id) {
+      playClickSound();
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
+    }
+
+    function showToast(text) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-text').innerText = text;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+
+    /* Initialize upon page load */
+    window.onload = function() {
+      initSidebar();
+      lucide.createIcons();
+      renderQuestion();
+      renderPeronSlots();
+      updateSidebarProgress();
+    };
+  </script>
+</body>
+</html>
